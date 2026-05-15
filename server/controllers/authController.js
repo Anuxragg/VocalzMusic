@@ -142,18 +142,22 @@ exports.googleLogin = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Google token is required' });
     }
 
-    const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: process.env.GOOGLE_CLIENT_ID,
+    // Since we are using useGoogleLogin hook on the frontend, it returns an access_token.
+    // We verify the access_token by fetching the user's profile from Google.
+    const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${token}` }
     });
 
-    const { sub: googleId, email, name, picture } = ticket.getPayload();
+    if (!response.ok) {
+      return res.status(401).json({ success: false, message: 'Invalid Google access token' });
+    }
+
+    const userData = await response.json();
+    const { sub: googleId, email, name, picture } = userData;
 
     let user = await User.findOne({ $or: [{ googleId }, { email }] });
 
     if (!user) {
-      // Create new user if not exists
-      // Extract username from email or name
       let username = name.replace(/\s+/g, '').toLowerCase() + Math.floor(Math.random() * 1000);
       user = await User.create({
         username,
@@ -162,7 +166,6 @@ exports.googleLogin = async (req, res, next) => {
         avatar: picture,
       });
     } else if (!user.googleId) {
-      // Link googleId to existing email-only account
       user.googleId = googleId;
       if (!user.avatar) user.avatar = picture;
       await user.save();

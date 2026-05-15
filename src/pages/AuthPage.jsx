@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
-import { GoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin } from '@react-oauth/google';
+import { FcGoogle } from 'react-icons/fc';
 import { useAuth } from '../context/AuthContext'; 
 
 const Divider = styled.div`
@@ -32,10 +33,31 @@ const GoogleWrapper = styled.div`
   display: flex;
   justify-content: center;
   margin-top: 10px;
+`;
+
+const CustomGoogleBtn = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+  background-color: white;
+  color: black;
+  border: none;
+  border-radius: 24px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #f1f1f1;
+  }
   
-  /* Override default button styles to match VOCALZ */
-  iframe {
-    margin: 0 auto !important;
+  &:active {
+    background-color: #e2e2e2;
   }
 `;const scrollDiagonal = keyframes`
   from { transform: translateY(0); }
@@ -306,11 +328,11 @@ export default function AuthPage() {
     }
   };
 
-  const handleGoogleSuccess = async (credentialResponse) => {
+  const handleGoogleSuccess = async (tokenResponse) => {
     setError('');
     setLoading(true);
     try {
-      await loginWithGoogle(credentialResponse.credential);
+      await loginWithGoogle(tokenResponse.access_token);
       navigate('/', { replace: true });
     } catch (err) {
       setError(err?.response?.data?.message || 'Google login failed.');
@@ -322,6 +344,12 @@ export default function AuthPage() {
   const handleGoogleError = () => {
     setError('Google login was unsuccessful.');
   };
+
+  const googleLoginAction = useGoogleLogin({
+    onSuccess: handleGoogleSuccess,
+    onError: handleGoogleError,
+    ux_mode: 'redirect',
+  });
 
   const onKey = (e) => { if (e.key === 'Enter') handleSubmit(); };
  
@@ -400,15 +428,10 @@ export default function AuthPage() {
           <Divider>OR</Divider>
 
           <GoogleWrapper>
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={handleGoogleError}
-              theme="filled_black"
-              shape="pill"
-              use_fedcm_for_prompt={true}
-              text={isRegister ? 'signup_with' : 'signin_with'}
-              width="312"
-            />
+            <CustomGoogleBtn onClick={() => googleLoginAction()} type="button">
+              <FcGoogle size={24} />
+              <span>{isRegister ? 'Sign up with Google' : 'Sign in with Google'}</span>
+            </CustomGoogleBtn>
           </GoogleWrapper>
  
           <Footer>
