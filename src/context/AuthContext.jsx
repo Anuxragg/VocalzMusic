@@ -34,6 +34,12 @@ export function AuthProvider({ children }) {
     return response.data;
   }, []);
 
+  const loginWithGoogle = useCallback(async (token) => {
+    const response = await api.post('/auth/google', { token });
+    setUser(response.data?.data || null);
+    return response.data;
+  }, []);
+
   const logout = useCallback(async () => {
     await api.post('/auth/logout');
     setUser(null);
@@ -45,11 +51,12 @@ export function AuthProvider({ children }) {
       loading,
       login,
       register,
+      loginWithGoogle,
       logout,
       restoreSession,
       isAuthenticated: Boolean(user),
     }),
-    [user, loading, login, register, logout, restoreSession]
+    [user, loading, login, register, loginWithGoogle, logout, restoreSession]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

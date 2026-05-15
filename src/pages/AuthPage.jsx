@@ -1,8 +1,43 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext'; 
-const scrollDiagonal = keyframes`
+
+const Divider = styled.div`
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 20px 0;
+  color: #8c8c8c;
+  font-size: 0.8rem;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #333;
+  }
+
+  &::before {
+    margin-right: .6em;
+  }
+
+  &::after {
+    margin-left: .6em;
+  }
+`;
+
+const GoogleWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  
+  /* Override default button styles to match VOCALZ */
+  iframe {
+    margin: 0 auto !important;
+  }
+`;const scrollDiagonal = keyframes`
   from { transform: translateY(0); }
   to   { transform: translateY(-50%); }
 `;
@@ -271,6 +306,23 @@ export default function AuthPage() {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setError('');
+    setLoading(true);
+    try {
+      await loginWithGoogle(credentialResponse.credential);
+      navigate('/', { replace: true });
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Google login failed.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleError = () => {
+    setError('Google login was unsuccessful.');
+  };
+
   const onKey = (e) => { if (e.key === 'Enter') handleSubmit(); };
  
   return (
@@ -344,6 +396,20 @@ export default function AuthPage() {
               : (isRegister ? 'Sign Up' : 'Sign In')
             }
           </SubmitBtn>
+
+          <Divider>OR</Divider>
+
+          <GoogleWrapper>
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              theme="filled_black"
+              shape="pill"
+              use_fedcm_for_prompt={true}
+              text={isRegister ? 'signup_with' : 'signin_with'}
+              width="312"
+            />
+          </GoogleWrapper>
  
           <Footer>
             {isRegister

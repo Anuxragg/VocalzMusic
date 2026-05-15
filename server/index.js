@@ -26,7 +26,10 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
-app.use(helmet());
+app.use(helmet({
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+}));
 const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI;
 
 let cached = global.mongoose;

@@ -1,4 +1,6 @@
 const User = require('../models/User');
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const {
   generateAccessToken,
   generateRefreshToken,
@@ -130,5 +132,51 @@ exports.getSession = async (req, res, next) => {
     return res.status(200).json({ success: true, data: sanitizeUser(user) });
   } catch (error) {
     return res.status(401).json({ success: false, message: 'Not authenticated' });
+  }
+};
+
+exports.googleLogin = async (req, res, next) => {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      return res.status(400).json({ success: false, message: 'Google token is required' });
+    }
+
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const { sub: googleId, email, name, picture } = ticket.getPayload();
+
+    let user = await User.findOne({ $or: [{ googleId }, { email }] });
+
+    if (!user) {
+      // Create new user if not exists
+      // Extract username from email or name
+      let username = name.replace(/\s+/g, '').toLowerCase() + Math.floor(Math.random() * 1000);
+      user = await User.create({
+        username,
+        email,
+        googleId,
+        avatar: picture,
+      });
+    } else if (!user.googleId) {
+      // Link googleId to existing email-only account
+      user.googleId = googleId;
+      if (!user.avatar) user.avatar = picture;
+      await user.save();
+    }
+
+    const accessToken = generateAccessToken({ id: user._id, role: user.role });
+    const refreshToken = generateRefreshToken({ id: user._id });
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    setTokens(res, accessToken, refreshToken);
+    return res.status(200).json({ success: true, data: sanitizeUser(user) });
+  } catch (error) {
+    console.error('Google Auth Error:', error);
+    return res.status(401).json({ success: false, message: 'Google authentication failed' });
   }
 };
