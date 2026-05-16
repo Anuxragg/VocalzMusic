@@ -18,6 +18,12 @@ const playsRoutes = require('./routes/plays');
 const searchRoutes = require('./routes/search');
 
 const app = express();
+const hasRequiredAuthEnv = () => ({
+  mongoUri: Boolean(process.env.MONGO_URI || process.env.MONGODB_URI),
+  jwtSecret: Boolean(process.env.JWT_SECRET),
+  jwtRefreshSecret: Boolean(process.env.JWT_REFRESH_SECRET),
+  googleClientId: Boolean(process.env.GOOGLE_CLIENT_ID),
+});
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -110,7 +116,16 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use('/api', limiter);
 
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ success: true, message: 'VOCALZ API healthy', environment: process.env.NODE_ENV });
+  const env = hasRequiredAuthEnv();
+  res.status(200).json({
+    success: true,
+    message: 'VOCALZ API healthy',
+    environment: process.env.NODE_ENV,
+    authConfig: {
+      ready: Object.values(env).every(Boolean),
+      ...env,
+    },
+  });
 });
 
 app.use('/api/auth', authRoutes);
