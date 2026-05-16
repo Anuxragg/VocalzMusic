@@ -9,8 +9,16 @@ const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 
 const authRoutes = require('./routes/auth');
+const songsRoutes = require('./routes/songs');
+const albumsRoutes = require('./routes/albums');
+const artistsRoutes = require('./routes/artists');
+const playlistsRoutes = require('./routes/playlists');
+const usersRoutes = require('./routes/users');
+const playsRoutes = require('./routes/plays');
+const searchRoutes = require('./routes/search');
 
 const app = express();
+app.set('trust proxy', 1);
 const hasRequiredAuthEnv = () => ({
   mongoUri: Boolean(process.env.MONGO_URI || process.env.MONGODB_URI),
   jwtSecret: Boolean(process.env.JWT_SECRET),
@@ -60,22 +68,6 @@ async function connectToDatabase() {
   cached.conn = await cached.promise;
   return cached.conn;
 }
-
-const loadRoute = (routePath, label) => {
-  try {
-    return require(routePath);
-  } catch (error) {
-    console.error(`Failed to load ${label} routes:`, error.message);
-    return express.Router().use((req, res) => {
-      res.status(500).json({
-        success: false,
-        message: `${label} routes are unavailable`,
-        code: 'ROUTE_LOAD_FAILURE',
-        detail: error.message,
-      });
-    });
-  }
-};
 
 // Ensure database connection is established before handling any API request
 app.use(async (req, res, next) => {
@@ -142,13 +134,13 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
-app.use('/api/songs', loadRoute('./routes/songs', 'songs'));
-app.use('/api/albums', loadRoute('./routes/albums', 'albums'));
-app.use('/api/artists', loadRoute('./routes/artists', 'artists'));
-app.use('/api/playlists', loadRoute('./routes/playlists', 'playlists'));
-app.use('/api/users', loadRoute('./routes/users', 'users'));
-app.use('/api/plays', loadRoute('./routes/plays', 'plays'));
-app.use('/api/search', loadRoute('./routes/search', 'search'));
+app.use('/api/songs', songsRoutes);
+app.use('/api/albums', albumsRoutes);
+app.use('/api/artists', artistsRoutes);
+app.use('/api/playlists', playlistsRoutes);
+app.use('/api/users', usersRoutes);
+app.use('/api/plays', playsRoutes);
+app.use('/api/search', searchRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Route not found' });
