@@ -264,7 +264,7 @@ const TILES = [
  
 export default function AuthPage() {
   const navigate = useNavigate();
-  const { login, register, isAuthenticated } = useAuth();
+  const { login, register, loginWithGoogle, isAuthenticated } = useAuth();
   const [mode, setMode]   = useState('login');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -345,10 +345,10 @@ export default function AuthPage() {
     setError('Google login was unsuccessful.');
   };
 
-  const googleLoginAction = useGoogleLogin({
+  const googleLogin = useGoogleLogin({
+    scope: 'openid email profile',
     onSuccess: handleGoogleSuccess,
     onError: handleGoogleError,
-    ux_mode: 'redirect',
   });
 
   const onKey = (e) => { if (e.key === 'Enter') handleSubmit(); };
@@ -428,7 +428,7 @@ export default function AuthPage() {
           <Divider>OR</Divider>
 
           <GoogleWrapper>
-            <CustomGoogleBtn onClick={() => googleLoginAction()} type="button">
+            <CustomGoogleBtn onClick={() => googleLogin()} type="button">
               <FcGoogle size={24} />
               <span>{isRegister ? 'Sign up with Google' : 'Sign in with Google'}</span>
             </CustomGoogleBtn>

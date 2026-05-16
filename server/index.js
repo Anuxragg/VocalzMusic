@@ -27,7 +27,7 @@ const limiter = rateLimit({
 });
 
 app.use(helmet({
-  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
+  crossOriginOpenerPolicy: { policy: "unsafe-none" },
   crossOriginResourcePolicy: { policy: "cross-origin" },
 }));
 const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI;
