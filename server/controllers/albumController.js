@@ -1,4 +1,3 @@
-const { cloudinary } = require('../config/cloudinary');
 const Album = require('../models/Album');
 
 exports.createAlbum = async (req, res, next) => {
@@ -76,6 +75,7 @@ exports.updateAlbum = async (req, res, next) => {
 
 exports.deleteAlbum = async (req, res, next) => {
   try {
+    const { cloudinary } = require('../config/cloudinary');
     const query = req.user.role === 'admin' ? { _id: req.params.id } : { _id: req.params.id, owner: req.user._id };
     const album = await Album.findOne(query);
     if (!album) return res.status(404).json({ success: false, message: 'Album not found or unauthorized' });

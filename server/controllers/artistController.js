@@ -40,18 +40,23 @@ exports.getArtistAlbums = async (req, res, next) => {
   }
 };
 
-const { cloudinary } = require('../config/cloudinary');
-const multer = require('multer');
+exports.artistUploadMiddleware = (req, res, next) => {
+  try {
+    const multer = require('multer');
+    const storage = multer.memoryStorage();
+    const upload = multer({
+      storage,
+      limits: { fileSize: 10 * 1024 * 1024 },
+    }).fields([{ name: 'avatar', maxCount: 1 }]);
 
-const storage = multer.memoryStorage();
-const upload = multer({ 
-  storage,
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
-});
-
-exports.artistUploadMiddleware = upload.fields([{ name: 'avatar', maxCount: 1 }]);
+    return upload(req, res, next);
+  } catch (error) {
+    return next(error);
+  }
+};
 
 const uploadBufferToCloudinary = (buffer, folder) => new Promise((resolve, reject) => {
+  const { cloudinary } = require('../config/cloudinary');
   const timeoutId = setTimeout(() => {
     reject(new Error('Cloudinary upload timed out after 60 seconds'));
   }, 60000);
