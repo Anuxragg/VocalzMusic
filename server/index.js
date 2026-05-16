@@ -71,6 +71,7 @@ const loadRoute = (routePath, label) => {
         success: false,
         message: `${label} routes are unavailable`,
         code: 'ROUTE_LOAD_FAILURE',
+        detail: error.message,
       });
     });
   }
