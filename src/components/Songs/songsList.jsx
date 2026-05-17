@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import defaultArtistImg from '../../media/voj.jpg';
 import oldBollywoodImg from '../../media/old_bollywood.png';
 import gazalImg from '../../media/gazal.png';
@@ -77,6 +77,15 @@ export default function SongsList({ user, favorites, setFavorites, currentView, 
     const [showAllArtistSongs, setShowAllArtistSongs] = useState(false);
     const [menuSongId, setMenuSongId] = useState(null);
     const topSongsRef = useRef(null);
+
+    const randomAlbums = useMemo(() => {
+        const uniqueAlbums = Array.from(new Set(liveSongs.map(s => s.albumText).filter(Boolean)));
+        return uniqueAlbums.sort(() => 0.5 - Math.random());
+    }, [liveSongs]);
+
+    const halfLength = Math.ceil(randomAlbums.length / 2);
+    const row1Albums = randomAlbums.slice(0, halfLength);
+    const row2Albums = randomAlbums.slice(halfLength);
 
     const handleScroll = (direction) => {
         if (topSongsRef.current) {
@@ -740,7 +749,7 @@ export default function SongsList({ user, favorites, setFavorites, currentView, 
                         </div>
                         <AlbumsScrollContainerStyled>
                             {loading ? Array(5).fill(0).map((_, i) => <SkeletonBox key={i} $width="165px" $height="165px" $borderRadius="12px" />) : (
-                                Array.from(new Set(liveSongs.map(s => s.albumText).filter(Boolean))).slice(0, 10).map(albumName => {
+                                row1Albums.map(albumName => {
                                     const albumSongs = liveSongs.filter(s => s.albumText === albumName);
                                     const firstSong = albumSongs[0];
                                     return (
@@ -760,6 +769,30 @@ export default function SongsList({ user, favorites, setFavorites, currentView, 
                                 })
                             )}
                         </AlbumsScrollContainerStyled>
+                        {row2Albums.length > 0 && (
+                            <AlbumsScrollContainerStyled style={{ marginTop: '0px' }}>
+                                {loading ? Array(5).fill(0).map((_, i) => <SkeletonBox key={i} $width="165px" $height="165px" $borderRadius="12px" />) : (
+                                    row2Albums.map(albumName => {
+                                        const albumSongs = liveSongs.filter(s => s.albumText === albumName);
+                                        const firstSong = albumSongs[0];
+                                        return (
+                                            <AlbumCardStyled key={albumName} onClick={() => { setSelectedAlbum(albumName); setCurrentView('Album'); }}>
+                                                <div className="album-image-container">
+                                                    <img src={firstSong.songImage} alt={albumName} className="album-image" />
+                                                    <button className="play-button-overlay" onClick={(e) => { e.stopPropagation(); handleSongClick(firstSong, albumSongs); }}>
+                                                        <IoPlay />
+                                                    </button>
+                                                </div>
+                                                <p className="album-title">{albumName}</p>
+                                                <div className="album-info-row">
+                                                    <span>{firstSong.artist}</span>
+                                                </div>
+                                            </AlbumCardStyled>
+                                        );
+                                    })
+                                )}
+                            </AlbumsScrollContainerStyled>
+                        )}
                     </>
                 ) : isAlbumView ? (() => {
                     const actualAlbum = selectedAlbum ? registeredAlbums.find(a => a.title === selectedAlbum) : null;
