@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { VscLibrary } from "react-icons/vsc";
-import { MdOutlineFavoriteBorder, MdPlaylistPlay, MdPersonOutline, MdAlbum } from "react-icons/md";
+import { MdOutlineFavoriteBorder, MdPlaylistPlay, MdPersonOutline, MdAlbum, MdHistory } from "react-icons/md";
 import { NavListContainerStyled, NavListStyled } from "./navList.styled";
 import { SideNavHeaderStyled } from "../navbar.styled";
 
@@ -10,6 +10,7 @@ export default function NavList({ menuOpen = false, collapsed = false, currentVi
         { icon: <MdPlaylistPlay />, text: 'Playlists' },
         { icon: <MdAlbum />, text: 'Albums' },
         { icon: <MdPersonOutline />, text: 'Artists' },
+        { icon: <MdHistory />, text: 'Listen History' },
     ];
 
     const handleNavClick = (viewName) => {

@@ -296,6 +296,9 @@ export default function SongsList({ user, favorites, setFavorites, currentView, 
             setSelectedAlbum(null);
         }
         if (currentView !== 'Discover') setSelectedGenre(null);
+        if (currentView !== 'Playlists' && currentView !== 'Playlist') {
+            setSelectedPlaylist(null);
+        }
         setEditingSong(null);
         setIsAddingToAlbum(null);
         setShowAllArtistSongs(false);

@@ -130,12 +130,6 @@ export default function TopNav({ currentView, setCurrentView, onSearch }) {
                     }}>
                         {isAuthenticated ? (
                             <>
-                                <button
-                                    onClick={() => { setCurrentView('Listen History'); setProfileOpen(false); }}
-                                    style={{ width: '100%', padding: '12px', background: 'none', border: 'none', color: 'white', textAlign: 'left', cursor: 'pointer', fontSize: '13px' }}
-                                >
-                                    Listen History
-                                </button>
                                 <button 
                                     onClick={handleLogout}
                                     style={{ width: '100%', padding: '12px', background: 'none', border: 'none', color: '#f83821', textAlign: 'left', cursor: 'pointer', fontSize: '13px', fontWeight: '500' }}
