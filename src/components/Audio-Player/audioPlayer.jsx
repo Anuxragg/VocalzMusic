@@ -51,6 +51,7 @@ export default function AudioPlayer({
                     audioRef.current.play().catch(err => console.error('Audio play error:', err));
                 }
             }
+            setIsExpanded(true);
         }
     }, [pickedSong]);
 
@@ -86,6 +87,30 @@ export default function AudioPlayer({
         window.addEventListener('wheel', handleWheel, { passive: false });
         return () => window.removeEventListener('wheel', handleWheel);
     }, [isMuted]);
+
+    // Spacebar play/pause shortcut
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.code === 'Space' || e.key === ' ') {
+                const active = document.activeElement;
+                if (
+                    active &&
+                    (active.tagName === 'INPUT' ||
+                     active.tagName === 'TEXTAREA' ||
+                     active.isContentEditable)
+                ) {
+                    return;
+                }
+                if (pickedSong) {
+                    e.preventDefault();
+                    setIsPlaying(prev => !prev);
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [pickedSong]);
 
     const handlePlayPause = () => {
         setIsPlaying(prev => !prev);
