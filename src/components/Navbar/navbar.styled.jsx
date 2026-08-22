@@ -180,9 +180,20 @@ export const TopNavContainerStyled = styled.nav`
     height: 60px;
     position: sticky;
     top: 0;
-    background-color: rgba(18, 18, 18, 0.85);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    background-color: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+`;
+
+export const ProfileGreetingStyled = styled.span`
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+
+  @media (max-width: 768px) {
+    display: none;
   }
 `;
 

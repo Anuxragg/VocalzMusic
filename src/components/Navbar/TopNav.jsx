@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"
 import { GoHome } from "react-icons/go";
 import { IoSearchOutline, IoPersonCircleOutline } from "react-icons/io5";
 import { MdOutlineExplore, MdCloudUpload } from "react-icons/md";
-import { TopNavContainerStyled, NavPillStyled, TopNavLinksStyled, SearchInputPillStyled } from "./navbar.styled";
+import { TopNavContainerStyled, NavPillStyled, TopNavLinksStyled, SearchInputPillStyled, ProfileGreetingStyled } from "./navbar.styled";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../services/api";
 
@@ -119,9 +119,9 @@ export default function TopNav({ currentView, setCurrentView, onSearch }) {
                    }}
                 >
                     <IoPersonCircleOutline />
-                    <span style={{ fontSize: '16px', fontWeight: '500', letterSpacing: '-0.2px' }}>
+                    <ProfileGreetingStyled>
                         {isAuthenticated && user?.username ? `${getGreeting()}, ${user.username}` : 'Account'}
-                    </span>
+                    </ProfileGreetingStyled>
                 </button>
 
                 {profileOpen && (

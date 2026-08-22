@@ -34,16 +34,115 @@ export const ViewHeadingStyled = styled.h1`
   font-weight: 700;
   margin: 0 0 20px 0;
   letter-spacing: -0.5px;
+  white-space: nowrap;
 
   @media (max-width: 768px) {
-    font-size: 28px;
+    font-size: 24px;
   }
 
   @media (max-width: 480px) {
-    font-size: 20px;
+    font-size: 18px;
     margin: 0 0 12px 0;
   }
-`
+`;
+
+export const HomeHeaderRowStyled = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  gap: 10px;
+  width: 100%;
+`;
+
+export const SectionTitleWrapperStyled = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  min-width: 0;
+
+  h1, h2, span {
+    font-family: 'Inter', sans-serif;
+    color: white;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.5px;
+    white-space: nowrap;
+  }
+
+  svg {
+    font-size: 24px;
+    color: #b3b3b3;
+    flex-shrink: 0;
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+
+  &:hover {
+    svg {
+      color: white;
+      transform: translateX(2px);
+    }
+  }
+
+  @media (max-width: 480px) {
+    h1, h2, span {
+      font-size: 18px;
+    }
+    svg {
+      font-size: 20px;
+    }
+  }
+`;
+
+export const NewPlaylistBtnStyled = styled.button`
+  background: #f83821;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 24px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13.5px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+
+  svg {
+    font-size: 18px;
+  }
+
+  &:hover {
+    background-color: #ff4a36;
+  }
+
+  &:active {
+    opacity: 0.85;
+  }
+
+  @media (max-width: 768px) {
+    padding: 7px 14px;
+    font-size: 12px;
+    gap: 5px;
+    svg {
+      font-size: 16px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 5px 10px;
+    font-size: 11px;
+    gap: 4px;
+    svg {
+      font-size: 14px;
+    }
+  }
+`;
 
 export const SongContainerStyled = styled.div`
   width: 100%;
@@ -343,7 +442,7 @@ export const SongIndexStyled = styled.div`
 export const AlbumsScrollContainerStyled = styled.div`
   display: flex;
   overflow-x: auto;
-  gap: 20px;
+  gap: 16px;
   padding-bottom: 20px;
   margin-top: 15px;
   scroll-snap-type: x mandatory;
@@ -351,14 +450,19 @@ export const AlbumsScrollContainerStyled = styled.div`
   overscroll-behavior-x: contain;
 
   &::-webkit-scrollbar {
-    height: 8px;
+    display: none;
   }
-  &::-webkit-scrollbar-thumb {
-    background: #333;
-    border-radius: 4px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  @media (max-width: 768px) {
+    gap: 12px;
+    padding-bottom: 12px;
+    margin-top: 10px;
   }
-  &::-webkit-scrollbar-track {
-    background: transparent;
+
+  @media (max-width: 480px) {
+    gap: 10px;
   }
 `;
 
@@ -376,7 +480,7 @@ export const AlbumCardStyled = styled.div`
     position: relative;
     width: 100%;
     aspect-ratio: 1;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     overflow: hidden;
     border-radius: 8px;
   }
@@ -393,15 +497,15 @@ export const AlbumCardStyled = styled.div`
     position: absolute;
     bottom: 8px;
     right: 8px;
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     background: #f83821;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 24px;
+    font-size: 22px;
     opacity: 0;
     transform: translateY(8px);
     transition: all 0.3s ease;
@@ -435,10 +539,13 @@ export const AlbumCardStyled = styled.div`
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-top: 8px;
+    margin-top: 4px;
     color: #b3b3b3;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .explicit-badge {
@@ -452,6 +559,28 @@ export const AlbumCardStyled = styled.div`
     align-items: center;
     justify-content: center;
     line-height: 1;
+  }
+
+  @media (max-width: 768px) {
+    min-width: 145px;
+    max-width: 145px;
+
+    .album-title { font-size: 13px; }
+    .album-info-row { font-size: 11px; margin-top: 3px; }
+    .play-button-overlay { display: none; }
+  }
+
+  @media (max-width: 480px) {
+    min-width: 128px;
+    max-width: 128px;
+
+    .album-image-container {
+      margin-bottom: 6px;
+      border-radius: 6px;
+    }
+
+    .album-title { font-size: 12px; }
+    .album-info-row { font-size: 10px; margin-top: 2px; }
   }
 `;
 

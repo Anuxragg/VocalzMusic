@@ -14,7 +14,7 @@ import {
     AlbumActionsRowStyled, AlbumTracklistHeaderStyled, AlbumTrackRowStyled, AlbumGenreGridStyled, AlbumFeaturedArtistsStyled,
     ArtistProfileContainerStyled, ArtistBannerStyled, ArtistStatsStyled, ArtistActionsStyled, ArtistProfileTabsStyled, ArtistSectionStyled,
     EditPlaylistModalOverlayStyled, EditPlaylistModalStyled, SkeletonBox, SongMenuStyled,
-    SliderNavBtnStyled
+    SliderNavBtnStyled, HomeHeaderRowStyled, SectionTitleWrapperStyled, NewPlaylistBtnStyled
 } from './songsList.styled';
 import { 
     MdPlaylistAdd, MdFavorite, MdFavoriteBorder, MdMoreHoriz, MdSearch, MdClose, 
@@ -703,15 +703,15 @@ export default function SongsList({ user, favorites, setFavorites, currentView, 
 
                 {isHomeView ? (
                     <>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '15px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }} onClick={() => setCurrentView('Discover')}>
-                                <ViewHeadingStyled style={{ fontSize: '24px', margin: 0 }}>Best New Songs</ViewHeadingStyled>
-                                <MdChevronRight style={{ fontSize: '28px', color: '#b3b3b3', marginTop: '2px' }} />
-                            </div>
-                            <button onClick={() => setIsCreatingPlaylist(true)} style={{ background: '#f83821', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '20px', cursor: 'pointer', fontWeight: '600', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                <MdAddCircleOutline fontSize="18px" /> New Playlist
-                            </button>
-                        </div>
+                        <HomeHeaderRowStyled>
+                            <SectionTitleWrapperStyled onClick={() => setCurrentView('Discover')}>
+                                <h2>Best New Songs</h2>
+                                <MdChevronRight />
+                            </SectionTitleWrapperStyled>
+                            <NewPlaylistBtnStyled onClick={() => setIsCreatingPlaylist(true)}>
+                                <MdAddCircleOutline /> <span>New Playlist</span>
+                            </NewPlaylistBtnStyled>
+                        </HomeHeaderRowStyled>
                         <div style={{ position: 'relative' }}>
                             <TopSongsGridStyled ref={topSongsRef}>
                                 {loading ? (
@@ -759,10 +759,13 @@ export default function SongsList({ user, favorites, setFavorites, currentView, 
                             <SliderNavBtnStyled className="next" onClick={() => handleScroll('right')}><IoChevronForwardOutline /></SliderNavBtnStyled>
                         </div>
 
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '15px', marginTop: '30px' }}>
-                            <ViewHeadingStyled style={{ fontSize: '24px', margin: 0 }}>Recently Added Albums</ViewHeadingStyled>
-                            <span style={{ color: '#f83821', cursor: 'pointer', fontWeight: '600', fontSize: '13px' }} onClick={() => setCurrentView('Albums')}>See All</span>
-                        </div>
+                        <HomeHeaderRowStyled style={{ marginTop: '30px' }}>
+                            <SectionTitleWrapperStyled onClick={() => setCurrentView('Albums')}>
+                                <h2>Recently Added Albums</h2>
+                                <MdChevronRight />
+                            </SectionTitleWrapperStyled>
+                            <span style={{ color: '#f83821', cursor: 'pointer', fontWeight: '600', fontSize: '13px', flexShrink: 0 }} onClick={() => setCurrentView('Albums')}>See All</span>
+                        </HomeHeaderRowStyled>
                         <AlbumsScrollContainerStyled>
                             {loading ? Array(5).fill(0).map((_, i) => <SkeletonBox key={i} $width="165px" $height="165px" $borderRadius="12px" />) : (
                                 row1Albums.map(albumName => {
