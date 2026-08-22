@@ -13,8 +13,6 @@ In-progress work involves designing the user interface and laying the foundation
 
 
 
-https://github.com/Lonka-Pardhu/music-web-app/assets/108354935/acd7d205-24b2-4bba-b91d-46fb6b755e50
-
 
 
 
