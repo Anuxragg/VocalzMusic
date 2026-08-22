@@ -60,6 +60,7 @@ export const SongContainerStyled = styled.div`
   cursor: pointer;
   position: relative;
   scroll-snap-align: start;
+  scroll-snap-stop: always;
 
   &:hover {
     background-color: rgba(255,255,255,0.05);
@@ -69,6 +70,8 @@ export const SongContainerStyled = styled.div`
     height: 56px;
     padding: 0 4px 0 0;
     border-bottom: none;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
     
     &:last-child {
       border-bottom: none;
@@ -263,6 +266,9 @@ export const TopSongsGridStyled = styled.div`
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scroll-padding-left: 0;
   
   /* Hide scrollbar */
   &::-webkit-scrollbar {
@@ -276,11 +282,12 @@ export const TopSongsGridStyled = styled.div`
   }
 
   @media (max-width: 768px) {
-    grid-auto-columns: 85%;
-    gap: 0 12px;
+    grid-auto-columns: 86%;
+    gap: 0 14px;
     margin: 0;
     padding: 0;
     width: 100%;
+    scroll-snap-type: x mandatory;
   }
 `;
 
@@ -339,6 +346,9 @@ export const AlbumsScrollContainerStyled = styled.div`
   gap: 20px;
   padding-bottom: 20px;
   margin-top: 15px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
 
   &::-webkit-scrollbar {
     height: 8px;
@@ -359,6 +369,8 @@ export const AlbumCardStyled = styled.div`
   flex-direction: column;
   cursor: pointer;
   position: relative;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 
   .album-image-container {
     position: relative;
@@ -474,7 +486,7 @@ export const AlbumRightColStyled = styled.div`
   width: 350px;
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 16px;
   position: sticky;
   top: 20px;
   height: fit-content;
@@ -487,6 +499,7 @@ export const AlbumRightColStyled = styled.div`
     width: 100%;
     align-items: center;
     position: static;
+    gap: 12px;
   }
 
   .big-album-art {
@@ -500,6 +513,20 @@ export const AlbumRightColStyled = styled.div`
 
     &:hover {
       transform: scale(1.02);
+    }
+
+    @media (max-width: 1024px) {
+      max-width: 320px;
+    }
+
+    @media (max-width: 768px) {
+      max-width: 280px;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.6);
+    }
+
+    @media (max-width: 480px) {
+      max-width: 245px;
+      border-radius: 12px;
     }
   }
 `;
@@ -604,9 +631,9 @@ export const AlbumActionsRowStyled = styled.div`
 `;
 
 export const AlbumTracklistHeaderStyled = styled.div`
-  display: grid;
-  grid-template-columns: 46px 1fr 100px 80px;
-  padding: 0 0 10px 0;
+  display: flex;
+  align-items: center;
+  padding: 0 8px 10px 8px;
   border-bottom: 1px solid rgba(255,255,255,0.1);
   color: #a7a7a7;
   font-size: 13px;
@@ -614,42 +641,53 @@ export const AlbumTracklistHeaderStyled = styled.div`
   margin-bottom: 15px;
   letter-spacing: 0.5px;
   
-  span:nth-child(1) { text-align: center; }
-  span:nth-child(3) { text-align: left; padding-left: 20px; }
-  span:last-child { text-align: right; }
+  .col-index { width: 36px; text-align: center; flex-shrink: 0; }
+  .col-title { flex: 1; text-align: left; }
+  .col-duration { width: 55px; text-align: right; margin-right: 8px; flex-shrink: 0; }
+  .col-actions-header { width: 36px; flex-shrink: 0; }
+
+  @media (max-width: 480px) {
+    padding: 0 4px 8px 4px;
+    font-size: 12px;
+    .col-index { width: 28px; }
+    .col-duration { width: 45px; margin-right: 4px; }
+    .col-actions-header { width: 32px; }
+  }
 `;
 
 export const AlbumTrackRowStyled = styled.div`
-  display: grid;
-  grid-template-columns: 46px 1fr 100px 80px;
-  padding: 10px 0;
-  margin: 0 -8px;
-  padding-left: 8px;
-  padding-right: 8px;
+  display: flex;
   align-items: center;
-  border-radius: 4px;
+  padding: 8px;
+  border-radius: 6px;
   transition: background-color 0.2s;
   cursor: pointer;
   position: relative;
 
   &:hover {
-    background-color: rgba(255,255,255,0.1);
+    background-color: rgba(255,255,255,0.08);
   }
 
   .col-index {
+    width: 36px;
     display: flex;
     justify-content: center;
     align-items: center;
     color: #a7a7a7;
     font-size: 14px;
     font-weight: 400;
+    flex-shrink: 0;
   }
 
   .col-title {
+    flex: 1;
+    min-width: 0;
     overflow: hidden;
+    padding-right: 12px;
+    
     p { margin: 0; }
     .song-name {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 500;
       color: white;
       white-space: nowrap;
@@ -659,28 +697,58 @@ export const AlbumTrackRowStyled = styled.div`
     .song-artist {
       font-size: 13px;
       color: #a7a7a7;
-      margin-top: 4px;
+      margin-top: 3px;
       font-weight: 400;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 
   .col-duration {
-    text-align: left;
-    padding-left: 20px;
-    p { margin: 0; font-size: 13px; color: #a7a7a7; }
+    width: 55px;
+    text-align: right;
+    margin-right: 8px;
+    flex-shrink: 0;
+    
+    p { 
+      margin: 0; 
+      font-size: 13px; 
+      color: #a7a7a7; 
+      text-align: right; 
+    }
   }
 
   .col-actions {
+    width: 36px;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 16px;
-    opacity: 0;
-    transition: opacity 0.2s;
+    justify-content: center;
+    flex-shrink: 0;
+    
+    button {
+      background: none;
+      border: none;
+      color: #b3b3b3;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      
+      &:hover { color: white; }
+    }
   }
 
-  &:hover .col-actions {
-    opacity: 1;
+  @media (max-width: 480px) {
+    padding: 8px 4px;
+    
+    .col-index { width: 28px; font-size: 13px; }
+    .col-title .song-name { font-size: 14px; }
+    .col-title .song-artist { font-size: 12px; }
+    .col-duration { width: 45px; margin-right: 4px; }
+    .col-duration p { font-size: 12px; }
+    .col-actions { width: 32px; }
   }
 `;
 

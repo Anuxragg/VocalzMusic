@@ -217,9 +217,17 @@ export default function SongsList({ user, favorites, setFavorites, currentView, 
 
     const renderSongMenu = (song) => {
         if (menuSongId !== song.id) return null;
+        const favorite = isFavorite(song.id);
         
         return (
             <SongMenuStyled onClick={(e) => e.stopPropagation()}>
+                <button onClick={(e) => { 
+                    handleLikeClick(e, song.id); 
+                    setMenuSongId(null); 
+                }}>
+                    {favorite ? <MdFavorite style={{ color: '#f83821' }} /> : <MdFavoriteBorder />} 
+                    {favorite ? 'Remove from Liked' : 'Save to Liked Songs'}
+                </button>
                 <button onClick={(e) => { e.stopPropagation(); setAddingSongToPlaylist(song); setMenuSongId(null); }}>
                     <MdPlaylistAdd /> Add to collection
                 </button>
@@ -814,111 +822,110 @@ export default function SongsList({ user, favorites, setFavorites, currentView, 
                     const metaYear = actualAlbum?.releaseDate ? new Date(actualAlbum.releaseDate).getFullYear() : '2024';
 
                     return (
-                        <AlbumViewContainerStyled>
-                            <AlbumLeftColStyled>
-                                {(selectedAlbum || selectedPlaylist || selectedGenre) && (
-                                    <button 
-                                        onClick={() => { setSelectedAlbum(null); setSelectedPlaylist(null); setSelectedGenre(null); }}
-                                        style={{ background: 'none', border: 'none', color: 'white', opacity: 0.7, cursor: 'pointer', marginBottom: '20px', padding: 0, display: 'flex', alignSelf: 'flex-start' }}
-                                    >
-                                        <IoArrowBack size={28} />
-                                    </button>
-                                )}
-                                <AlbumHeaderInfoStyled>
-                                    <h1>{heading}</h1>
-                                    <div className="album-subinfo">
-                                        <img src={metaIcon} alt="" className="album-artist-icon" />
-                                        <span className="artist-name" onClick={() => setSelectedArtist(metaArtist)}>{metaArtist}</span>
-                                        <span>• {selectedAlbum ? metaYear : 'Collection'}</span>
-                                        <span>• {displayedSongs.length} songs</span>
-                                        <span>• {(() => {
-                                            const totalSeconds = displayedSongs.reduce((acc, s) => {
-                                                const [m, s_] = (s.duration || '0:00').split(':').map(Number);
-                                                return acc + (m * 60 + s_);
-                                            }, 0);
-                                            const hrs = Math.floor(totalSeconds / 3600);
-                                            const mins = Math.floor((totalSeconds % 3600) / 60);
-                                            return hrs > 0 ? `${hrs} hr ${mins} min` : `${mins} min`;
-                                        })()}</span>
-                                    </div>
-                                </AlbumHeaderInfoStyled>
+                        <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                            {(selectedAlbum || selectedPlaylist || selectedGenre) && (
+                                <button 
+                                    onClick={() => { setSelectedAlbum(null); setSelectedPlaylist(null); setSelectedGenre(null); }}
+                                    style={{ background: 'none', border: 'none', color: 'white', opacity: 0.7, cursor: 'pointer', marginBottom: '15px', padding: 0, display: 'flex', alignSelf: 'flex-start' }}
+                                >
+                                    <IoArrowBack size={28} />
+                                </button>
+                            )}
+                            <AlbumViewContainerStyled style={{ marginTop: '0' }}>
+                                <AlbumLeftColStyled>
+                                    <AlbumHeaderInfoStyled>
+                                        <h1>{heading}</h1>
+                                        <div className="album-subinfo">
+                                            <img src={metaIcon} alt="" className="album-artist-icon" />
+                                            <span className="artist-name" onClick={() => setSelectedArtist(metaArtist)}>{metaArtist}</span>
+                                            <span>• {selectedAlbum ? metaYear : 'Collection'}</span>
+                                            <span>• {displayedSongs.length} songs</span>
+                                            <span>• {(() => {
+                                                const totalSeconds = displayedSongs.reduce((acc, s) => {
+                                                    const [m, s_] = (s.duration || '0:00').split(':').map(Number);
+                                                    return acc + (m * 60 + s_);
+                                                }, 0);
+                                                const hrs = Math.floor(totalSeconds / 3600);
+                                                const mins = Math.floor((totalSeconds % 3600) / 60);
+                                                return hrs > 0 ? `${hrs} hr ${mins} min` : `${mins} min`;
+                                            })()}</span>
+                                        </div>
+                                    </AlbumHeaderInfoStyled>
 
-                                <AlbumActionsRowStyled>
-                                    <button className="play-btn" onClick={() => {
-                                        const isCurrentContextPlaying = displayedSongs.some(s => s.id === clickedSong?.id);
-                                        if (isCurrentContextPlaying) {
-                                            setIsPlaying(!isPlaying);
-                                        } else {
-                                            handleSongClick(displayedSongs[0], displayedSongs);
-                                        }
-                                    }}>
-                                        {(isPlaying && displayedSongs.some(s => s.id === clickedSong?.id)) ? <IoPause /> : <IoPlay style={{ marginLeft: '4px' }} />}
-                                    </button>
-                                    <button className="icon-action" style={isShuffle ? { color: '#f83821' } : {}} onClick={() => setIsShuffle(!isShuffle)}><IoShuffleOutline /></button>
-                                    <button className="icon-action" style={isRepeat ? { color: '#f83821' } : {}} onClick={() => setIsRepeat(!isRepeat)}><IoRepeatOutline /></button>
+                                    <AlbumActionsRowStyled>
+                                        <button className="play-btn" onClick={() => {
+                                            const isCurrentContextPlaying = displayedSongs.some(s => s.id === clickedSong?.id);
+                                            if (isCurrentContextPlaying) {
+                                                setIsPlaying(!isPlaying);
+                                            } else {
+                                                handleSongClick(displayedSongs[0], displayedSongs);
+                                            }
+                                        }}>
+                                            {(isPlaying && displayedSongs.some(s => s.id === clickedSong?.id)) ? <IoPause /> : <IoPlay style={{ marginLeft: '4px' }} />}
+                                        </button>
+                                        <button className="icon-action" style={isShuffle ? { color: '#f83821' } : {}} onClick={() => setIsShuffle(!isShuffle)}><IoShuffleOutline /></button>
+                                        <button className="icon-action" style={isRepeat ? { color: '#f83821' } : {}} onClick={() => setIsRepeat(!isRepeat)}><IoRepeatOutline /></button>
 
-                                    {((currentView === 'Playlist' || currentView === 'Playlists') && (selectedPlaylist?.owner === user?.id || selectedPlaylist?.owner?._id === user?.id || user?.role === 'admin')) && (
-                                        <button className="icon-action" onClick={() => { setIsEditingPlaylist(true); setEditPlaylistName(selectedPlaylist.name); setEditPlaylistDescription(selectedPlaylist.description || ''); setEditPlaylistPreview(selectedPlaylist.coverUrl || null); setEditPlaylistCover(null); }}><MdModeEdit /></button>
-                                    )}
-
-                                    {(((currentView === 'Playlist' || currentView === 'Playlists') && (selectedPlaylist?.owner === user?.id || selectedPlaylist?.owner?._id === user?.id)) || ((currentView === 'Album' || currentView === 'Albums') && user?.role === 'admin' && selectedAlbum)) && (
-                                        <button className="icon-action" onClick={() => setIsQuickAddOpen(true)}><MdAddCircleOutline /></button>
-                                    )}
-                                    {((currentView === 'Album' || currentView === 'Albums') && user?.role === 'admin' && selectedAlbum) && (
-                                        <button className="icon-action" onClick={handleDeleteAlbumFully} style={{ color: '#ff4d4d' }} title="Delete Album Fully"><MdDelete /></button>
-                                    )}
-                                    <div className="search-action" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        {isLocalSearchOpen ? (
-                                            <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.1)', borderRadius: '20px', padding: '4px 12px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                                                <MdSearch style={{ color: '#b3b3b3', fontSize: '18px' }} />
-                                                <input 
-                                                    autoFocus
-                                                    placeholder="Search in list"
-                                                    value={localSearchQuery}
-                                                    onChange={(e) => setLocalSearchQuery(e.target.value)}
-                                                    style={{ background: 'none', border: 'none', color: 'white', fontSize: '13px', outline: 'none', width: '120px', marginLeft: '5px' }}
-                                                />
-                                                <MdClose 
-                                                    style={{ color: '#b3b3b3', fontSize: '18px', cursor: 'pointer' }} 
-                                                    onClick={() => { setIsLocalSearchOpen(false); setLocalSearchQuery(''); }}
-                                                />
-                                            </div>
-                                        ) : (
-                                            <MdSearch onClick={() => setIsLocalSearchOpen(true)} style={{ cursor: 'pointer' }} />
+                                        {((currentView === 'Playlist' || currentView === 'Playlists') && (selectedPlaylist?.owner === user?.id || selectedPlaylist?.owner?._id === user?.id || user?.role === 'admin')) && (
+                                            <button className="icon-action" onClick={() => { setIsEditingPlaylist(true); setEditPlaylistName(selectedPlaylist.name); setEditPlaylistDescription(selectedPlaylist.description || ''); setEditPlaylistPreview(selectedPlaylist.coverUrl || null); setEditPlaylistCover(null); }}><MdModeEdit /></button>
                                         )}
-                                    </div>
-                                </AlbumActionsRowStyled>
 
-                                <AlbumTracklistHeaderStyled>
-                                    <span>#</span>
-                                    <span>Title</span>
-                                    <span>Duration</span>
-                                    <span></span>
-                                </AlbumTracklistHeaderStyled>
-                                {displayedSongs
-                                    .filter(song => 
-                                        !localSearchQuery || 
-                                        song.songName.toLowerCase().includes(localSearchQuery.toLowerCase()) ||
-                                        song.artist.toLowerCase().includes(localSearchQuery.toLowerCase())
-                                    )
-                                    .map((song, index) => (
-                                    <AlbumTrackRowStyled key={song.id} onClick={() => handleSongClick(song, displayedSongs)}>
-                                        <div className="col-index">
-                                            {clickedSong?.id === song.id ? <IoPlay style={{ color: '#f83821' }} /> : index + 1}
-                                        </div>
-                                        <div className="col-title">
-                                            <p className="song-name">{song.songName}</p>
-                                            <p className="song-artist">{song.artist}</p>
-                                        </div>
-                                        <div className="col-duration">
-                                            <p>{song.duration}</p>
-                                        </div>
-                                        <div className="col-actions">
-                                            <LikeButtonStyled onClick={(e) => handleLikeClick(e, song.id)} $isFavorite={isFavorite(song.id)}>{isFavorite(song.id) ? <MdFavorite /> : <MdFavoriteBorder />}</LikeButtonStyled>
-                                            {((currentView === 'Playlist' && (selectedPlaylist?.owner === user?.id || selectedPlaylist?.owner?._id === user?.id)) || (currentView === 'Album' && user?.role === 'admin')) && (
-                                                <button onClick={(e) => handleRemoveFromPlaylist(e, song.id)} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer' }} title="Remove from collection"><MdDelete /></button>
+                                        {(((currentView === 'Playlist' || currentView === 'Playlists') && (selectedPlaylist?.owner === user?.id || selectedPlaylist?.owner?._id === user?.id)) || ((currentView === 'Album' || currentView === 'Albums') && user?.role === 'admin' && selectedAlbum)) && (
+                                            <button className="icon-action" onClick={() => setIsQuickAddOpen(true)}><MdAddCircleOutline /></button>
+                                        )}
+                                        {((currentView === 'Album' || currentView === 'Albums') && user?.role === 'admin' && selectedAlbum) && (
+                                            <button className="icon-action" onClick={handleDeleteAlbumFully} style={{ color: '#ff4d4d' }} title="Delete Album Fully"><MdDelete /></button>
+                                        )}
+                                        <div className="search-action" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            {isLocalSearchOpen ? (
+                                                <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.1)', borderRadius: '20px', padding: '4px 12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                                    <MdSearch style={{ color: '#b3b3b3', fontSize: '18px' }} />
+                                                    <input 
+                                                        autoFocus
+                                                        placeholder="Search in list"
+                                                        value={localSearchQuery}
+                                                        onChange={(e) => setLocalSearchQuery(e.target.value)}
+                                                        style={{ background: 'none', border: 'none', color: 'white', fontSize: '13px', outline: 'none', width: '120px', marginLeft: '5px' }}
+                                                    />
+                                                    <MdClose 
+                                                        style={{ color: '#b3b3b3', fontSize: '18px', cursor: 'pointer' }} 
+                                                        onClick={() => { setIsLocalSearchOpen(false); setLocalSearchQuery(''); }}
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <MdSearch onClick={() => setIsLocalSearchOpen(true)} style={{ cursor: 'pointer' }} />
                                             )}
-                                                <LikeButtonStyled onClick={(e) => handleLikeClick(e, song.id)} $isFavorite={isFavorite(song.id)}>{isFavorite(song.id) ? <MdFavorite /> : <MdFavoriteBorder />}</LikeButtonStyled>
+                                        </div>
+                                    </AlbumActionsRowStyled>
+
+                                    <AlbumTracklistHeaderStyled>
+                                        <span className="col-index">#</span>
+                                        <span className="col-title">Title</span>
+                                        <span className="col-duration">Duration</span>
+                                        <span className="col-actions-header"></span>
+                                    </AlbumTracklistHeaderStyled>
+                                    {displayedSongs
+                                        .filter(song => 
+                                            !localSearchQuery || 
+                                            song.songName.toLowerCase().includes(localSearchQuery.toLowerCase()) ||
+                                            song.artist.toLowerCase().includes(localSearchQuery.toLowerCase())
+                                        )
+                                        .map((song, index) => (
+                                        <AlbumTrackRowStyled key={song.id} onClick={() => handleSongClick(song, displayedSongs)}>
+                                            <div className="col-index">
+                                                {clickedSong?.id === song.id ? <IoPlay style={{ color: '#f83821' }} /> : index + 1}
+                                            </div>
+                                            <div className="col-title">
+                                                <p className="song-name">{song.songName}</p>
+                                                <p className="song-artist">{song.artist}</p>
+                                            </div>
+                                            <div className="col-duration">
+                                                <p>{song.duration}</p>
+                                            </div>
+                                            <div className="col-actions">
+                                                {((currentView === 'Playlist' && (selectedPlaylist?.owner === user?.id || selectedPlaylist?.owner?._id === user?.id)) || (currentView === 'Album' && user?.role === 'admin')) && (
+                                                    <button onClick={(e) => handleRemoveFromPlaylist(e, song.id)} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer' }} title="Remove from collection"><MdDelete /></button>
+                                                )}
                                                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                                                     <button 
                                                         onClick={(e) => { e.stopPropagation(); setMenuSongId(menuSongId === song.id ? null : song.id); }} 
@@ -928,50 +935,51 @@ export default function SongsList({ user, favorites, setFavorites, currentView, 
                                                     </button>
                                                     {renderSongMenu(song)}
                                                 </div>
-                                        </div>
-                                    </AlbumTrackRowStyled>
-                                ))}
-                            </AlbumLeftColStyled>
+                                            </div>
+                                        </AlbumTrackRowStyled>
+                                    ))}
+                                </AlbumLeftColStyled>
 
-                            <AlbumRightColStyled>
-                                <img src={metaImage} alt="Art" className="big-album-art" />
+                                <AlbumRightColStyled>
+                                    <img src={metaImage} alt="Art" className="big-album-art" />
 
-                                {/* Only show genres mapped from songs if we have them */}
-                                <div style={{ marginTop: '10px' }}>
-                                    <AlbumGenreGridStyled>
-                                        {Array.from(new Set((actualAlbum ? [actualAlbum.genre] : displayedSongs.map(s => s.genre)).filter(Boolean))).map(g => (
-                                            <button key={g} className="genre-pill" onClick={() => { setSelectedGenre(g); setCurrentView('Discover'); }}>{g}</button>
-                                        ))}
-                                        {displayedSongs.every(s => !s.genre) && !actualAlbum?.genre && ['Pop', 'Electronic', 'Aesthetic'].map(g => (
-                                            <button key={g} className="genre-pill">{g}</button>
-                                        ))}
-                                    </AlbumGenreGridStyled>
-                                </div>
-
-                                <div style={{ marginTop: '20px' }}>
-                                    <p style={{ color: 'white', fontWeight: '800', marginBottom: '15px', fontSize: '15px', letterSpacing: '0.5px' }}>Featured Artists</p>
-                                    <AlbumFeaturedArtistsStyled>
-                                        {Array.from(new Set([
-                                            ...(metaArtist || '').split(',').map(n => n.trim()), 
-                                            ...displayedSongs.flatMap(s => (s.artist || '').split(',').map(n => n.trim()))
-                                        ]))
-                                            .filter(n => n && n !== 'Various Artists' && n !== 'Playlist Owner')
-                                            .map(name => ({
-                                                name,
-                                                profile: allArtists.find(a => a.displayName === name)
-                                            }))
-                                            .filter(item => item.profile?.avatar || user?.role === 'admin')
-                                            .slice(0, 5)
-                                            .map(item => (
-                                                <div key={item.name} className="artist-row" onClick={() => setSelectedArtist(item.name)}>
-                                                    <img src={item.profile?.avatar || defaultArtistImg} alt="" />
-                                                    <p>{item.name}</p>
-                                                </div>
+                                    {/* Only show genres mapped from songs if we have them */}
+                                    <div>
+                                        <AlbumGenreGridStyled>
+                                            {Array.from(new Set((actualAlbum ? [actualAlbum.genre] : displayedSongs.map(s => s.genre)).filter(Boolean))).map(g => (
+                                                <button key={g} className="genre-pill" onClick={() => { setSelectedGenre(g); setCurrentView('Discover'); }}>{g}</button>
                                             ))}
-                                    </AlbumFeaturedArtistsStyled>
-                                </div>
-                            </AlbumRightColStyled>
-                        </AlbumViewContainerStyled>
+                                            {displayedSongs.every(s => !s.genre) && !actualAlbum?.genre && ['Pop', 'Electronic', 'Aesthetic'].map(g => (
+                                                <button key={g} className="genre-pill">{g}</button>
+                                            ))}
+                                        </AlbumGenreGridStyled>
+                                    </div>
+
+                                    <div style={{ marginTop: '4px' }}>
+                                        <p style={{ color: 'white', fontWeight: '800', marginBottom: '10px', fontSize: '15px', letterSpacing: '0.5px' }}>Featured Artists</p>
+                                        <AlbumFeaturedArtistsStyled>
+                                            {Array.from(new Set([
+                                                ...(metaArtist || '').split(',').map(n => n.trim()), 
+                                                ...displayedSongs.flatMap(s => (s.artist || '').split(',').map(n => n.trim()))
+                                            ]))
+                                                .filter(n => n && n !== 'Various Artists' && n !== 'Playlist Owner')
+                                                .map(name => ({
+                                                    name,
+                                                    profile: allArtists.find(a => a.displayName === name)
+                                                }))
+                                                .filter(item => item.profile?.avatar || user?.role === 'admin')
+                                                .slice(0, 5)
+                                                .map(item => (
+                                                    <div key={item.name} className="artist-row" onClick={() => setSelectedArtist(item.name)}>
+                                                        <img src={item.profile?.avatar || defaultArtistImg} alt="" />
+                                                        <p>{item.name}</p>
+                                                    </div>
+                                                ))}
+                                        </AlbumFeaturedArtistsStyled>
+                                    </div>
+                                </AlbumRightColStyled>
+                            </AlbumViewContainerStyled>
+                        </div>
                     );
                 })() : isUploadView ? (
                     <UploadSongs 
