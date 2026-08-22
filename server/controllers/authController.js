@@ -122,14 +122,43 @@ exports.getMe = async (req, res, next) => {
 
 exports.getSession = async (req, res, next) => {
   try {
-    const token = req.cookies?.accessToken;
-    if (!token) {
-      return res.status(401).json({ success: false, message: 'Not authenticated' });
+    let accessToken = req.cookies?.accessToken;
+    let userId = null;
+
+    if (accessToken) {
+      try {
+        const decoded = verifyAccessToken(accessToken);
+        userId = decoded.id;
+      } catch (err) {
+        // Access token expired, fallback to refresh token below
+      }
     }
 
-    const decoded = verifyAccessToken(token);
-    const user = await User.findById(decoded.id);
+    // If access token is missing or expired, check the 7-day refresh token
+    if (!userId) {
+      const refreshToken = req.cookies?.refreshToken;
+      if (!refreshToken) {
+        return res.status(401).json({ success: false, message: 'Not authenticated' });
+      }
 
+      const decodedRefresh = verifyRefreshToken(refreshToken);
+      const user = await User.findById(decodedRefresh.id);
+
+      if (!user || user.refreshToken !== refreshToken) {
+        return res.status(401).json({ success: false, message: 'Invalid refresh token' });
+      }
+
+      // Automatically issue fresh tokens to seamlessly extend session
+      const newAccessToken = generateAccessToken({ id: user._id, role: user.role });
+      const newRefreshToken = generateRefreshToken({ id: user._id });
+      user.refreshToken = newRefreshToken;
+      await user.save();
+
+      setTokens(res, newAccessToken, newRefreshToken);
+      return res.status(200).json({ success: true, data: sanitizeUser(user) });
+    }
+
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(401).json({ success: false, message: 'User not found' });
     }
@@ -157,8 +186,7 @@ exports.googleLogin = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Google token is required' });
     }
 
-    // Since we are using useGoogleLogin hook on the frontend, it returns an access_token.
-    // We verify the access_token by fetching the user's profile from Google.
+    // Verify the access_token by fetching the user's profile from Google
     const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
       headers: { Authorization: `Bearer ${token}` }
     });
