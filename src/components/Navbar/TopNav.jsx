@@ -85,6 +85,7 @@ export default function TopNav({ currentView, setCurrentView, onSearch }) {
                         <NavPillStyled 
                             key={item.id}
                             $isActive={currentView === item.id}
+                            $isUpload={item.id === 'Upload'}
                             onClick={() => setCurrentView(item.id)}
                         >
                             <span className="icon">{item.icon}</span>

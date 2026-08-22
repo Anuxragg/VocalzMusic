@@ -697,7 +697,7 @@ export default function SongsList({ user, favorites, setFavorites, currentView, 
                     <>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '15px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }} onClick={() => setCurrentView('Discover')}>
-                                <ViewHeadingStyled style={{ fontSize: '20px', margin: 0 }}>Best New Songs</ViewHeadingStyled>
+                                <ViewHeadingStyled style={{ fontSize: '24px', margin: 0 }}>Best New Songs</ViewHeadingStyled>
                                 <MdChevronRight style={{ fontSize: '28px', color: '#b3b3b3', marginTop: '2px' }} />
                             </div>
                             <button onClick={() => setIsCreatingPlaylist(true)} style={{ background: '#f83821', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '20px', cursor: 'pointer', fontWeight: '600', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>

@@ -291,22 +291,23 @@ export const SliderNavBtnStyled = styled.button`
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: rgba(18, 18, 18, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 10;
-  transition: all 0.2s;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255, 255, 255, 0.25);
 
   &:hover {
-    background: #f83821;
-    border-color: #f83821;
-    transform: translateY(-50%) scale(1.1);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.1) 100%);
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255, 255, 255, 0.35);
   }
 
   &.prev { left: -20px; }

@@ -33,6 +33,7 @@ export default function AudioPlayer({
     const [previousVolume, setPreviousVolume] = useState(0.5);
     const [isDraggingVolume, setIsDraggingVolume] = useState(false);
     const [isDraggingProgress, setIsDraggingProgress] = useState(false);
+    const hasAutoOpenedRef = useRef(false);
     const audioRef = useRef(null);
     const progressBarRef = useRef(null);
     const mobileProgressBarRef = useRef(null);
@@ -51,7 +52,10 @@ export default function AudioPlayer({
                     audioRef.current.play().catch(err => console.error('Audio play error:', err));
                 }
             }
-            setIsExpanded(true);
+            if (!hasAutoOpenedRef.current) {
+                setIsExpanded(true);
+                hasAutoOpenedRef.current = true;
+            }
         }
     }, [pickedSong]);
 

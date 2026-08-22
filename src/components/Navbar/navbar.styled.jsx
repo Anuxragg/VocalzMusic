@@ -5,15 +5,16 @@ export const NavContainerStyled = styled.div`
   position: relative;
   height: 100vh;
   width: ${props => props.$collapsed ? '84px' : '280px'}; /* Slightly wider for library items */
-  background-color: rgba(0, 0, 0, 0.5); /* Slightly more transparent for better blending */
-  backdrop-filter: blur(25px); /* Increased blur for smoother blending */
-  -webkit-backdrop-filter: blur(25px);
+  background: rgba(15, 15, 25, 0.4);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
   overflow-y: auto;
   z-index: 2000;
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
-  border-right: none; /* Removed harsh border for better blending */
 
   @media (max-width: 768px) {
     width: ${props => props.$collapsed ? '78px' : '200px'};
@@ -57,8 +58,10 @@ export const NavHeadStyled = styled.div`
 `
 
 export const SidebarToggleStyled = styled.button`
-  background: none;
-  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -71,7 +74,8 @@ export const SidebarToggleStyled = styled.button`
   height: 40px;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
     color: white;
   }
 
@@ -157,12 +161,14 @@ export const TopNavContainerStyled = styled.nav`
   padding: 16px 32px;
   height: 80px;
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.3); /* Much lighter to blend with the Aura */
-  backdrop-filter: blur(15px);
+  background-color: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   z-index: 1000;
   position: sticky;
   top: 0;
-  border-bottom: none; /* Removed harsh border for seamless transition */
 
   @media (max-width: 768px) {
     padding: 12px 20px;
@@ -174,7 +180,9 @@ export const TopNavContainerStyled = styled.nav`
     height: 60px;
     position: sticky;
     top: 0;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(18, 18, 18, 0.85);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
   }
 `;
 
@@ -201,43 +209,89 @@ export const TopNavLinksStyled = styled.div`
 export const NavPillStyled = styled.button`
   display: flex;
   align-items: center;
-  gap: 10px;
-  background-color: ${props => props.$isActive ? '#282828' : 'transparent'};
-  border: ${props => props.children[1].props.children === 'Upload' ? '1px solid #f83821' : 'none'};
-  border-radius: 30px; /* more rounded pill */
-  padding: 12px 24px; /* increased padding for premium feel */
-  color: ${props => props.$isActive ? 'white' : props.children[1].props.children === 'Upload' ? '#f83821' : '#b3b3b3'};
+  gap: 0;
+  background: ${props => props.$isActive 
+    ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.05) 100%)' 
+    : props.$isUpload 
+      ? 'rgba(248, 56, 33, 0.08)' 
+      : 'transparent'};
+  border: ${props => props.$isUpload 
+    ? '1px solid #f83821' 
+    : props.$isActive 
+      ? '1px solid rgba(255, 255, 255, 0.2)' 
+      : '1px solid transparent'};
+  backdrop-filter: ${props => props.$isActive ? 'blur(16px)' : 'none'};
+  -webkit-backdrop-filter: ${props => props.$isActive ? 'blur(16px)' : 'none'};
+  box-shadow: ${props => props.$isActive ? '0 4px 16px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.3)' : 'none'};
+  border-radius: 30px;
+  padding: ${props => props.$isActive ? '10px 20px' : '10px 14px'};
+  color: ${props => props.$isActive ? '#ffffff' : props.$isUpload ? '#f83821' : '#b3b3b3'};
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   flex-shrink: 0;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background-color: ${props => props.$isActive ? '#3e3e3e' : props.children[1].props.children === 'Upload' ? 'rgba(248, 56, 33, 0.1)' : 'rgba(255,255,255,0.12)'}; /* subtle hover */
-    color: white;
-    transform: scale(1.02);
-  }
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
   .icon {
     font-size: 22px;
     display: flex;
     align-items: center;
+    justify-content: center;
+  }
+
+  .label {
+    max-width: ${props => props.$isActive ? '120px' : '0'};
+    opacity: ${props => props.$isActive ? '1' : '0'};
+    margin-left: ${props => props.$isActive ? '8px' : '0'};
+    white-space: nowrap;
+    overflow: hidden;
+    transition: max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease, margin-left 0.25s ease;
+  }
+
+  &:hover {
+    background: ${props => props.$isActive 
+      ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.08) 100%)' 
+      : props.$isUpload 
+        ? 'rgba(248, 56, 33, 0.16)' 
+        : 'rgba(255, 255, 255, 0.08)'};
+    border-color: ${props => props.$isUpload 
+      ? '#f83821' 
+      : props.$isActive 
+        ? 'rgba(255, 255, 255, 0.3)' 
+        : 'rgba(255, 255, 255, 0.14)'};
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    color: white;
+    padding: 10px 20px;
+    box-shadow: ${props => props.$isActive 
+      ? '0 4px 16px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.35)' 
+      : '0 2px 8px rgba(0, 0, 0, 0.15)'};
+
+    .label {
+      max-width: 120px;
+      opacity: 1;
+      margin-left: 8px;
+    }
   }
 
   @media (max-width: 768px) {
-    padding: 8px 16px;
+    padding: ${props => props.$isActive ? '8px 16px' : '8px 12px'};
     font-size: 13px;
     .icon { font-size: 20px; }
+
+    &:hover {
+      padding: 8px 16px;
+    }
   }
 
   @media (max-width: 480px) {
-    padding: 8px 12px;
+    padding: ${props => props.$isActive ? '8px 14px' : '8px 10px'};
     font-size: 12px;
-    gap: 6px;
     .icon { font-size: 18px; }
-    .label {
-      display: ${props => props.$isActive ? 'block' : 'none'};
+
+    &:hover {
+      padding: 8px 14px;
     }
   }
 `;
@@ -246,11 +300,22 @@ export const SearchInputPillStyled = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  background-color: #282828;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.25);
   border-radius: 30px;
   padding: 10px 20px;
   color: white;
   flex-shrink: 0;
+  transition: all 0.25s ease;
+
+  &:focus-within {
+    border-color: rgba(255, 255, 255, 0.35);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.08) 100%);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  }
 
   input {
     background: transparent;
@@ -261,7 +326,7 @@ export const SearchInputPillStyled = styled.div`
     outline: none;
     width: 200px;
     &::placeholder {
-      color: #b3b3b3;
+      color: rgba(255, 255, 255, 0.6);
       font-weight: 400;
     }
   }

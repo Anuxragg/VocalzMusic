@@ -19,14 +19,25 @@ export const NavListStyled = styled.div`
   align-items: center;
   height: 48px;
   width: ${props => props.$collapsed ? '56px' : '100%'};
-  border-radius: 6px;
+  border-radius: 8px;
   transition: all 0.2s ease;
   cursor: pointer;
   padding: 0 12px;
-  background-color: transparent;
+  background: ${props => props.$isActive 
+    ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%)' 
+    : 'transparent'};
+  border: ${props => props.$isActive 
+    ? '1px solid rgba(255, 255, 255, 0.16)' 
+    : '1px solid transparent'};
+  backdrop-filter: ${props => props.$isActive ? 'blur(12px)' : 'none'};
+  -webkit-backdrop-filter: ${props => props.$isActive ? 'blur(12px)' : 'none'};
+  box-shadow: ${props => props.$isActive ? '0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15)' : 'none'};
 
   &:hover {
-    background-color: #1a1a1a;
+    background: ${props => props.$isActive 
+      ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.06) 100%)' 
+      : 'rgba(255, 255, 255, 0.07)'};
+    border-color: rgba(255, 255, 255, 0.12);
     p, span { color: white; }
   }
 
