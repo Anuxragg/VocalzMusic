@@ -714,9 +714,14 @@ export default function SongsList({ user, favorites, setFavorites, currentView, 
                                     shuffledHomeSongs.slice(0, 32).map((song, index) => (
                                     <SongContainerStyled key={song.id} onClick={() => handleSongClick(song, shuffledHomeSongs.slice(0, 32))}>
                                         <SongDetailsContainerStyled>
+                                            {clickedSong?.id === song.id && (
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '8px', color: '#f83821', flexShrink: 0, fontSize: '16px' }}>
+                                                    <IoPlay />
+                                                </div>
+                                            )}
                                             <SongImgContainerStyled><img src={song.songImage} alt="" /></SongImgContainerStyled>
                                             <SongNameArtistStyled>
-                                                <p style={{ fontWeight: '600', fontSize: '15px' }}>{song.songName}</p>
+                                                <p style={{ fontWeight: '600', fontSize: '15px', color: clickedSong?.id === song.id ? '#f83821' : 'white' }}>{song.songName}</p>
                                                 <p style={{ opacity: 0.6, fontSize: '13px' }}>{song.artist}</p>
                                             </SongNameArtistStyled>
                                         </SongDetailsContainerStyled>
@@ -1154,8 +1159,16 @@ export default function SongsList({ user, favorites, setFavorites, currentView, 
                             displayedSongs.map(song => (
                                 <SongContainerStyled key={song.id} onClick={() => handleSongClick(song, displayedSongs)}>
                                     <SongDetailsContainerStyled>
+                                        {clickedSong?.id === song.id && (
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '8px', color: '#f83821', flexShrink: 0, fontSize: '16px' }}>
+                                                <IoPlay />
+                                            </div>
+                                        )}
                                         <SongImgContainerStyled><img src={song.songImage} alt="" /></SongImgContainerStyled>
-                                        <SongNameArtistStyled><p>{song.songName}</p><p>{song.artist}</p></SongNameArtistStyled>
+                                        <SongNameArtistStyled>
+                                            <p style={{ color: clickedSong?.id === song.id ? '#f83821' : 'white' }}>{song.songName}</p>
+                                            <p>{song.artist}</p>
+                                        </SongNameArtistStyled>
                                     </SongDetailsContainerStyled>
                                     <SongDurationContainerStyled>
                                         <p>{song.duration}</p>

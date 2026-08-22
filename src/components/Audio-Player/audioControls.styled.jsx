@@ -26,14 +26,14 @@ export const MainPlayButtonStyled = styled.div`
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: background-color 0.2s ease, opacity 0.2s ease;
     color: white;
     font-size: 28px;
     flex-shrink: 0;
 
     &:hover {
-        /* removed scale effect */
         background-color: #ff4a36;
+        opacity: 0.9;
     }
 
   &:active {
@@ -54,12 +54,12 @@ export const ControlIconStyled = styled.span`
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    transition: color 0.2s ease, opacity 0.2s ease;
     padding: 6px;
 
     &:hover {
         color: white;
-        /* removed scale effect */
+        opacity: 0.85;
     }
 
     &.prev-next {
@@ -94,10 +94,10 @@ export const AudioControlsWrapperStyled = styled.div`
 
     > svg {
       cursor: pointer;
-      transition: transform 0.2s;
+      transition: color 0.2s ease, opacity 0.2s ease;
 
       &:hover {
-        transform: scale(1.1);
+        opacity: 0.85;
       }
     }
   }
@@ -274,13 +274,13 @@ export const VolumeControlContainerStyled = styled.div`
     justify-content: center;
     font-size: 20px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: color 0.2s ease, opacity 0.2s ease;
     margin: 0;
     color: #b3b3b3;
 
     &:hover {
-      transform: scale(1.1);
       color: white;
+      opacity: 0.85;
     }
   }
 

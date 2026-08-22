@@ -568,11 +568,12 @@ export const AlbumActionsRowStyled = styled.div`
     font-size: 26px;
     border: none;
     flex-shrink: 0;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color 0.2s ease, opacity 0.2s ease;
     box-shadow: 0 4px 12px rgba(248, 56, 33, 0.3);
     
     &:hover {
       background-color: #ff4a36;
+      opacity: 0.95;
     }
   }
   
@@ -582,14 +583,14 @@ export const AlbumActionsRowStyled = styled.div`
     background: none;
     border: none;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: color 0.2s ease, opacity 0.2s ease;
     display: flex;
     align-items: center;
     flex-shrink: 0;
     
     &:hover {
       color: white;
-      transform: scale(1.1);
+      opacity: 0.85;
     }
   }
 

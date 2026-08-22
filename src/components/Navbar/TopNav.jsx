@@ -63,6 +63,13 @@ export default function TopNav({ currentView, setCurrentView, onSearch }) {
         navItems.push({ id: 'Upload', icon: <MdCloudUpload />, label: 'Upload' });
     }
 
+    const getGreeting = () => {
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 12) return 'Good morning';
+        if (hour >= 12 && hour < 18) return 'Good afternoon';
+        return 'Good evening';
+    };
+
     return (
         <TopNavContainerStyled>
             <TopNavLinksStyled>
@@ -106,14 +113,14 @@ export default function TopNav({ currentView, setCurrentView, onSearch }) {
                        color: 'white', 
                        display: 'flex', 
                        alignItems: 'center', 
-                       gap: '8px', 
+                       gap: '10px', 
                        cursor: 'pointer',
-                       fontSize: '24px'
+                       fontSize: '28px'
                    }}
                 >
                     <IoPersonCircleOutline />
-                    <span style={{ fontSize: '14px', fontWeight: '500' }}>
-                        {isAuthenticated && user?.username ? `Hello, ${user.username}` : 'Account'}
+                    <span style={{ fontSize: '16px', fontWeight: '500', letterSpacing: '-0.2px' }}>
+                        {isAuthenticated && user?.username ? `${getGreeting()}, ${user.username}` : 'Account'}
                     </span>
                 </button>
 

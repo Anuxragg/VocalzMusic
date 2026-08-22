@@ -6,7 +6,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
-const rateLimit = require('express-rate-limit');
+const { generalLimiter } = require('./middleware/rateLimiter');
 
 const authRoutes = require('./routes/auth');
 const songsRoutes = require('./routes/songs');
@@ -24,13 +24,6 @@ const hasRequiredAuthEnv = () => ({
   jwtSecret: Boolean(process.env.JWT_SECRET),
   jwtRefreshSecret: Boolean(process.env.JWT_REFRESH_SECRET),
   googleClientId: Boolean(process.env.GOOGLE_CLIENT_ID),
-});
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 300,
-  standardHeaders: true,
-  legacyHeaders: false,
 });
 
 app.use(helmet({
@@ -118,7 +111,7 @@ app.use('/api/songs', (req, res, next) => {
 // Set global JSON limits higher for consistency
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-app.use('/api', limiter);
+app.use('/api', generalLimiter);
 
 app.get('/api/health', (req, res) => {
   const env = hasRequiredAuthEnv();

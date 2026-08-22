@@ -81,7 +81,7 @@ export const PlaybackControlsGroupStyled = styled.div`
     cursor: pointer;
     display: flex;
     align-items: center;
-    transition: all 0.2s ease;
+    transition: color 0.2s ease, opacity 0.2s ease;
 
     // Default sizing for shuffle/repeat
     font-size: 16px; 
@@ -93,8 +93,9 @@ export const PlaybackControlsGroupStyled = styled.div`
 
     &:hover {
       color: white;
-      /* removed scale effect */
+      opacity: 0.85;
     }
+
     &.active, &.active svg {
       color: #f83821;
     }
@@ -593,11 +594,11 @@ export const ActionGroupStyled = styled.div`
         justify-content: center;
         font-size: 22px;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: color 0.2s ease, opacity 0.2s ease;
 
         &:hover {
             color: white;
-            /* removed scale effect */
+            opacity: 0.85;
         }
 
         &.active {
@@ -630,73 +631,59 @@ export const ActiveSongImageContainerStyled = styled.div`
   }
 
   @media (max-width: 480px) {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     > img {
-        width: 40px;
-        height: 40px;
+      width: 36px;
+      height: 36px;
     }
   }
 `;
 
 export const ActiveSongDetailsStyled = styled.div`
-  margin-left: 8px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-width: 0;
-  flex: 1;
+  line-height: 1.2;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 220px;
 
-  > p:nth-child(1) {
-    font-size: 13px;
-    margin: 0;
+  > p:first-child {
+    font-size: 14px;
     font-weight: 600;
     color: white;
-    white-space: nowrap;
-    overflow: hidden;
-    position: relative;
-    width: 100%;
-    
-    // Marquee container
-    span {
-      display: inline-block;
-      padding-left: 0;
-      animation: ${props => props.$shouldScroll ? 'marquee 10s linear infinite' : 'none'};
-      
-      @keyframes marquee {
-        0% { transform: translateX(0); }
-        10% { transform: translateX(0); }
-        90% { transform: translateX(-50%); }
-        100% { transform: translateX(-50%); }
-      }
-    }
-  }
-
-  > p:nth-child(2) {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.6);
-    margin: 2px 0 0 0;
-    white-space: nowrap;
+    margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
+  > p:nth-child(2) {
+    font-size: 12px;
+    color: #b3b2b2;
+    margin: 2px 0 0 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .album-name {
+    font-size: 11px;
+    color: #666;
+    margin: 2px 0 0 0;
+  }
+
+  @media (max-width: 768px) {
+    max-width: 150px;
+  }
+
   @media (max-width: 480px) {
-    margin-left: 12px;
-
-    > p:nth-child(1) {
-      font-size: 14px;
-    }
-
-    > p:nth-child(2) {
-      font-size: 11px;
-    }
+    max-width: 130px;
+    > p:first-child { font-size: 13px; }
+    > p:nth-child(2) { font-size: 11px; }
   }
 `;
 
-export const ActiveSongLikeButtonStyled = styled.button`
-  background: none;
-  border: none;
+export const ActiveSongLikeButtonStyled = styled.span`
   color: ${props => props.$isFavorite ? '#f83821' : '#b3b2b2'};
   font-size: 18px;
   cursor: pointer;
@@ -705,16 +692,12 @@ export const ActiveSongLikeButtonStyled = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease, color 0.2s ease;
+  transition: color 0.2s ease, opacity 0.2s ease;
   flex-shrink: 0;
 
   &:hover {
-    /* removed scale effect */
     color: #f83821;
-  }
-
-  &:active {
-    transform: scale(0.95);
+    opacity: 0.85;
   }
 
   @media (max-width: 768px) {
