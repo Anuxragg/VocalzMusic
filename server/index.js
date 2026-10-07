@@ -1,4 +1,6 @@
-require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -82,6 +84,9 @@ app.use(async (req, res, next) => {
 const allowedOrigins = [
   process.env.CLIENT_URL,
   process.env.FRONTEND_URL,
+  process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`,
+  process.env.VERCEL_BRANCH_URL && `https://${process.env.VERCEL_BRANCH_URL}`,
+  process.env.VERCEL_PROJECT_PRODUCTION_URL && `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`,
 ].filter(Boolean).map((origin) => origin.trim().replace(/\/$/, ''));
 
 const isLocalDevelopmentOrigin = (origin) => {

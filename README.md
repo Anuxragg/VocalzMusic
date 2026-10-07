@@ -18,7 +18,7 @@ VOCALZ is a React music player with an Express API, MongoDB persistence, cookie-
    npm install
    ```
 
-2. Copy `.env.example` to `.env` and fill in the credentials. Keep `.env` out of version control.
+2. Copy `.env.example` to `.env` and fill in the credentials. Keep `.env` out of version control. For compatibility, the API also reads missing values from `server/.env`.
 
 3. Start the frontend and API together:
 
