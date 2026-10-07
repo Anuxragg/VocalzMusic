@@ -1,12 +1,18 @@
 const mongoose = require('mongoose');
-require('dotenv').config({ path: '../server/.env' });
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../server/.env') });
 
 const Song = require('../server/models/Song');
 const Artist = require('../server/models/Artist');
 
 async function fix() {
   try {
-    await mongoose.connect(process.env.MONGO_URI || 'mongodb+srv://admin:admin@cluster0.b7fiv.mongodb.net/vocalz?retryWrites=true&w=majority&appName=Cluster0');
+    const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
+    if (!mongoUri) {
+      throw new Error('Set MONGO_URI or MONGODB_URI in the environment or server/.env');
+    }
+
+    await mongoose.connect(mongoUri);
     console.log('Connected to DB');
 
     // Update any song with artist 'Daniel Caesar' to 'Daniel Ceasar'

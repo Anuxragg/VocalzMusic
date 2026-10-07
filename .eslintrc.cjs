@@ -9,6 +9,19 @@ module.exports = {
   ],
   ignorePatterns: ['dist', '.eslintrc.cjs'],
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
+  overrides: [
+    {
+      files: ['scripts/**/*.js'],
+      env: { node: true },
+      globals: {
+        __dirname: 'readonly',
+        module: 'readonly',
+        process: 'readonly',
+        require: 'readonly',
+      },
+      parserOptions: { sourceType: 'script' },
+    },
+  ],
   settings: { react: { version: '18.2' } },
   plugins: ['react-refresh'],
   rules: {
