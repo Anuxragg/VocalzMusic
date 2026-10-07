@@ -11,10 +11,14 @@ module.exports = {
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
   overrides: [
     {
-      files: ['scripts/**/*.js'],
+      files: ['server/**/*.js', 'scripts/**/*.js'],
       env: { node: true },
       globals: {
+        Buffer: 'readonly',
         __dirname: 'readonly',
+        __filename: 'readonly',
+        exports: 'readonly',
+        global: 'readonly',
         module: 'readonly',
         process: 'readonly',
         require: 'readonly',

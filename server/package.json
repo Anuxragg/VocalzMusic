@@ -1,11 +1,12 @@
 {
   "name": "vocalz-server",
+  "private": true,
   "version": "1.0.0",
   "description": "VOCALZ MERN music streaming backend",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "node --watch index.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -22,10 +23,6 @@
     "mongoose": "^8.8.0",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
-    "multer-storage-cloudinary": "^4.0.0",
-    "music-web-app": "file:.."
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.7"
+    "multer-storage-cloudinary": "^4.0.0"
   }
 }

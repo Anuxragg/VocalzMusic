@@ -23,6 +23,20 @@ const protect = async (req, res, next) => {
   }
 };
 
+const optionalProtect = async (req, res, next) => {
+  const token = req.cookies?.accessToken || req.headers.authorization?.split(' ')[1];
+  if (!token) return next();
+
+  try {
+    const decoded = verifyAccessToken(token);
+    req.user = await User.findById(decoded.id || decoded.userId).select('-password');
+  } catch (error) {
+    req.user = null;
+  }
+
+  return next();
+};
+
 const adminOnly = (req, res, next) => {
   if (!req.user || req.user.role !== 'admin') {
     return res.status(403).json({ success: false, message: 'Admin access required' });
@@ -37,4 +51,4 @@ const artistOnly = (req, res, next) => {
   return next();
 };
 
-module.exports = { protect, adminOnly, artistOnly };
+module.exports = { protect, optionalProtect, adminOnly, artistOnly };

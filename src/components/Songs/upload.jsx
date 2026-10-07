@@ -124,8 +124,9 @@ export default function UploadSongs({ onCancel, user, songToEdit, prefillAlbum, 
         setLoading(true);
 
         const uploadToCloudinaryDirect = async (file, resourceType, folder) => {
-            const sigRes = await api.get(`/songs/upload-signature?folder=${folder}`);
-            const { timestamp, signature, cloudName, apiKey } = sigRes.data;
+            const category = folder === 'vocalz/audio' ? 'audio' : 'covers';
+            const sigRes = await api.get(`/songs/upload-signature?folder=${category}`);
+            const { timestamp, signature, cloudName, apiKey, folder: signedFolder } = sigRes.data;
 
             if (!cloudName || !apiKey) {
                 throw new Error('Cloudinary credentials missing. Please RESTART your backend server so it can load the new .env variables.');
@@ -136,7 +137,7 @@ export default function UploadSongs({ onCancel, user, songToEdit, prefillAlbum, 
             formData.append('api_key', apiKey);
             formData.append('timestamp', timestamp);
             formData.append('signature', signature);
-            formData.append('folder', folder);
+            formData.append('folder', signedFolder);
 
             const uploadRes = await axios.post(
                 `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`,

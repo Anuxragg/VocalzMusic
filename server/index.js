@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -78,25 +78,49 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// CORS setup with fallback for production origins
+// CORS setup for the frontend origins configured for this deployment
 const allowedOrigins = [
   process.env.CLIENT_URL,
   process.env.FRONTEND_URL,
-].filter(Boolean);
+].filter(Boolean).map((origin) => origin.trim().replace(/\/$/, ''));
+
+const isLocalDevelopmentOrigin = (origin) => {
+  if (process.env.NODE_ENV === 'production') return false;
+
+  try {
+    const { hostname, protocol } = new URL(origin);
+    return protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(hostname);
+  } catch {
+    return false;
+  }
+};
+
+const isAllowedOrigin = (origin) => {
+  if (typeof origin !== 'string') return false;
+  return allowedOrigins.includes(origin.replace(/\/$/, '')) || isLocalDevelopmentOrigin(origin);
+};
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow same-origin (no origin header), local development, or explicitly allowed production origins
-    if (!origin || origin.startsWith('http://localhost') || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      // In production same-domain situations, the origin might be the Vercel URL
-      // We allow it to be dynamic to solve browser blocking
-      callback(null, true); 
+    if (!origin || isAllowedOrigin(origin)) {
+      return callback(null, true);
     }
+
+    return callback(null, false);
   },
   credentials: true,
 }));
+
+app.use((req, res, next) => {
+  if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) return next();
+
+  const origin = req.get('Origin');
+  if (!isAllowedOrigin(origin)) {
+    return res.status(403).json({ success: false, message: 'Request origin is not allowed' });
+  }
+
+  return next();
+});
 
 app.use(morgan('dev'));
 app.use(cookieParser());
@@ -108,9 +132,8 @@ app.use('/api/songs', (req, res, next) => {
   next();
 });
 
-// Set global JSON limits higher for consistency
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '100kb', parameterLimit: 100 }));
 app.use('/api', generalLimiter);
 
 app.get('/api/health', (req, res) => {
@@ -140,11 +163,33 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  const status = err.statusCode || 500;
+  let status = err.statusCode || err.status || 500;
+  if (err.name === 'ValidationError' || err.name === 'CastError') status = 400;
+  if (err.code === 11000) status = 409;
+  if (!Number.isInteger(status) || status < 400 || status > 599) status = 500;
+
+  console.error('API request failed', {
+    method: req.method,
+    path: req.path,
+    status,
+    name: err.name,
+    message: err.message,
+    stack: err.stack,
+  });
+
+  const messages = {
+    400: 'Invalid request',
+    401: 'Authentication required',
+    403: 'Forbidden',
+    404: 'Not found',
+    409: 'Conflict',
+    413: 'Request body too large',
+    422: 'Invalid input',
+    429: 'Too many requests',
+  };
   res.status(status).json({
     success: false,
-    message: err.message || 'Internal server error',
-    ...(process.env.NODE_ENV !== 'production' ? { stack: err.stack } : {}),
+    message: messages[status] || 'Internal server error',
   });
 });
 

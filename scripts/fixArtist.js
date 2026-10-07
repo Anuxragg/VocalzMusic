@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '../server/.env') });
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 const Song = require('../server/models/Song');
 const Artist = require('../server/models/Artist');
