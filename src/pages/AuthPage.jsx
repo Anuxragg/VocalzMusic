@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import { useGoogleLogin } from '@react-oauth/google';
 import { FcGoogle } from 'react-icons/fc';
+import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
 import { useAuth } from '../context/AuthContext'; 
 
 const Divider = styled.div`
@@ -180,6 +181,37 @@ const Input = styled.input`
   &::placeholder { color: #8c8c8c; }
   &:focus { background: #454545; }
 `;
+
+const PasswordField = styled.div`
+  position: relative;
+  width: 100%;
+  margin-bottom: 12px;
+`;
+
+const PasswordInput = styled(Input)`
+  box-sizing: border-box;
+  margin-bottom: 0;
+  padding-right: 52px;
+`;
+
+const PasswordToggle = styled.button`
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  color: #b3b3b3;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  transform: translateY(-50%);
+
+  &:hover { color: #fff; }
+  &:focus-visible { outline: 2px solid #fff; }
+`;
  
 const SlideField = styled.div`
   overflow: hidden;
@@ -268,6 +300,8 @@ export default function AuthPage() {
   const [mode, setMode]   = useState('login');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [form, setForm]   = useState({
     username: '', email: '', password: '', confirmPassword: '',
   });
@@ -284,6 +318,8 @@ export default function AuthPage() {
   const switchMode = (m) => {
     setMode(m);
     setError('');
+    setShowPassword(false);
+    setShowConfirmPassword(false);
     setForm({ username: '', email: '', password: '', confirmPassword: '' });
   };
  
@@ -396,24 +432,44 @@ export default function AuthPage() {
             autoComplete="email"
           />
  
-          <Input
-            type="password"
-            placeholder="Password"
-            value={form.password}
-            onChange={set('password')}
-            onKeyDown={onKey}
-            autoComplete={isRegister ? 'new-password' : 'current-password'}
-          />
+          <PasswordField>
+            <PasswordInput
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Password"
+              value={form.password}
+              onChange={set('password')}
+              onKeyDown={onKey}
+              autoComplete={isRegister ? 'new-password' : 'current-password'}
+            />
+            <PasswordToggle
+              type="button"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              aria-pressed={showPassword}
+              onClick={() => setShowPassword((visible) => !visible)}
+            >
+              {showPassword ? <MdVisibility size={20} /> : <MdVisibilityOff size={20} />}
+            </PasswordToggle>
+          </PasswordField>
  
           <SlideField $show={isRegister}>
-            <Input
-              type="password"
-              placeholder="Confirm Password"
-              value={form.confirmPassword}
-              onChange={set('confirmPassword')}
-              onKeyDown={onKey}
-              autoComplete="new-password"
-            />
+            <PasswordField>
+              <PasswordInput
+                type={showConfirmPassword ? 'text' : 'password'}
+                placeholder="Confirm Password"
+                value={form.confirmPassword}
+                onChange={set('confirmPassword')}
+                onKeyDown={onKey}
+                autoComplete="new-password"
+              />
+              <PasswordToggle
+                type="button"
+                aria-label={showConfirmPassword ? 'Hide confirmation password' : 'Show confirmation password'}
+                aria-pressed={showConfirmPassword}
+                onClick={() => setShowConfirmPassword((visible) => !visible)}
+              >
+                {showConfirmPassword ? <MdVisibility size={20} /> : <MdVisibilityOff size={20} />}
+              </PasswordToggle>
+            </PasswordField>
           </SlideField>
  
           {error && <ErrorMsg>{error}</ErrorMsg>}

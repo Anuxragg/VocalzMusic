@@ -1316,7 +1316,21 @@ export default function SongsList({ user, favorites, setFavorites, currentView, 
             </SongsListWrapperStyled>
 
             {clickedSong ? (
-                <AudioPlayer pickedSong={clickedSong} isPlaying={isPlaying} setIsPlaying={setIsPlaying} isSongFavorite={isFavorite(clickedSong.id)} onToggleFavorite={() => handleLikeClick({ stopPropagation: () => { } }, clickedSong.id)} onNext={handleNext} onPrevious={handlePrevious} isShuffle={isShuffle} setIsShuffle={setIsShuffle} isRepeat={isRepeat} setIsRepeat={setIsRepeat} />
+                <AudioPlayer
+                    pickedSong={clickedSong}
+                    isPlaying={isPlaying}
+                    setIsPlaying={setIsPlaying}
+                    isSongFavorite={isFavorite(clickedSong.id)}
+                    onToggleFavorite={() => handleLikeClick({ stopPropagation: () => { } }, clickedSong.id)}
+                    onNext={handleNext}
+                    onPrevious={handlePrevious}
+                    queue={playingPlaylist.length > 0 ? playingPlaylist : displayedSongs}
+                    onSelectSong={(song) => handleSongClick(song, playingPlaylist.length > 0 ? playingPlaylist : displayedSongs)}
+                    isShuffle={isShuffle}
+                    setIsShuffle={setIsShuffle}
+                    isRepeat={isRepeat}
+                    setIsRepeat={setIsRepeat}
+                />
             ) : (
                 <AudioPlayer isShuffle={isShuffle} setIsShuffle={setIsShuffle} isRepeat={isRepeat} setIsRepeat={setIsRepeat} />
             )}

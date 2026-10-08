@@ -358,16 +358,114 @@ export const ExpandedDetailsStyled = styled.div`
 `;
 
 export const ExpandedProgressStyled = styled.div`
+  width: 100%;
   margin-bottom: 40px;
+
+  > div {
+    width: 100%;
+    max-width: none;
+  }
 
   .time-info {
     display: flex;
     justify-content: space-between;
+    width: 100%;
     margin-top: 15px;
     color: rgba(255,255,255,0.4);
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 0.5px;
+  }
+`;
+
+export const QueuePanelStyled = styled.section`
+  position: absolute;
+  left: 60px;
+  bottom: 90px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  width: min(380px, calc(100vw - 80px));
+  max-height: min(440px, 50vh);
+  overflow: hidden;
+  color: white;
+  background: rgba(18, 18, 24, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(20px);
+  animation: queue-slide-in 0.22s ease-out both;
+
+  @keyframes queue-slide-in {
+    from { opacity: 0; transform: translateX(-14px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .queue-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    > strong { font-size: 15px; }
+    > span { color: rgba(255, 255, 255, 0.55); font-size: 12px; }
+  }
+
+  .queue-list {
+    overflow-y: auto;
+    padding: 6px;
+
+    > button {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 9px;
+      color: inherit;
+      text-align: left;
+      background: transparent;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+
+      &:hover, &:focus-visible { background: rgba(255, 255, 255, 0.1); }
+      &:focus-visible { outline: 2px solid #f83821; }
+
+      > img {
+        width: 42px;
+        height: 42px;
+        flex-shrink: 0;
+        object-fit: cover;
+        border-radius: 5px;
+      }
+    }
+
+    .queue-song-details {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      gap: 3px;
+
+      > strong, > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      > strong { font-size: 13px; font-weight: 600; }
+      > span { color: rgba(255, 255, 255, 0.58); font-size: 11px; }
+    }
+  }
+
+  .empty-queue {
+    margin: 0;
+    padding: 24px 18px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+  }
+
+  @media (max-width: 480px) {
+    left: 16px;
+    right: 16px;
+    bottom: 90px;
+    width: auto;
+    max-height: 42vh;
   }
 `;
 
@@ -454,6 +552,22 @@ export const ExpandedFooterStyled = styled.div`
   align-items: center;
   color: white;
   opacity: 0.6;
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    font-size: 28px;
+    padding: 10px;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover, &.active { opacity: 1; color: white; }
+    &:focus-visible { outline: 2px solid #f83821; border-radius: 6px; }
+  }
 
   span {
     font-size: 28px;

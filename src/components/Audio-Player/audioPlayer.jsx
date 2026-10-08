@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
-import { AudioPlayerContainerStyled, AudioPlayerWrapperStyled, ActiveSongWrapperStyled, ActiveSongImageContainerStyled, ActiveSongDetailsStyled, ActiveSongLikeButtonStyled, ActionGroupStyled, PlaybackControlsGroupStyled, CenterGroupStyled, IdentityGroupStyled, MobileProgressBarContainerStyled, MobileTimerStyled, AmbientAuraStyled, ExpandedPlayerContainerStyled, ExpandedHeaderStyled, ExpandedAlbumArtStyled, ExpandedDetailsStyled, ExpandedProgressStyled, ExpandedControlsStyled, ExpandedFooterStyled, ExpandedContentWrapperStyled, ExpandedRightSectionStyled } from "./audioPlayer.styled";
+import { AudioPlayerContainerStyled, AudioPlayerWrapperStyled, ActiveSongWrapperStyled, ActiveSongImageContainerStyled, ActiveSongDetailsStyled, ActiveSongLikeButtonStyled, ActionGroupStyled, PlaybackControlsGroupStyled, CenterGroupStyled, IdentityGroupStyled, MobileProgressBarContainerStyled, MobileTimerStyled, AmbientAuraStyled, ExpandedPlayerContainerStyled, ExpandedHeaderStyled, ExpandedAlbumArtStyled, ExpandedDetailsStyled, ExpandedProgressStyled, ExpandedControlsStyled, ExpandedFooterStyled, ExpandedContentWrapperStyled, ExpandedRightSectionStyled, QueuePanelStyled } from "./audioPlayer.styled";
 import { AudioPlayerDefaultStyled } from "./audioPlayerDefault.styled";
 import { AudioControlsContainerStyled, MainPlayButtonStyled, ControlIconStyled, VolumeControlContainerStyled, VolumeControlBarStyled, VolumeChangeStyled, SongSliderContainerStyled, ProgressBarContainerStyled, ProgressBarStyled } from "./audioControls.styled";
 import { IoPlay, IoPause, IoShuffleOutline, IoShuffle, IoRepeatOutline, IoRepeat, IoChevronDown, IoShareOutline } from "react-icons/io5";
@@ -16,6 +16,8 @@ export default function AudioPlayer({
     onToggleFavorite,
     onNext,
     onPrevious,
+    queue = [],
+    onSelectSong,
     isShuffle,
     setIsShuffle,
     isRepeat,
@@ -30,6 +32,7 @@ export default function AudioPlayer({
     const [currentTime, setCurrentTime] = useState(0)
     const [isMuted, setIsMuted] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
+    const [isQueueOpen, setIsQueueOpen] = useState(false);
     const [previousVolume, setPreviousVolume] = useState(0.5);
     const [isDraggingVolume, setIsDraggingVolume] = useState(false);
     const [isDraggingProgress, setIsDraggingProgress] = useState(false);
@@ -125,6 +128,12 @@ export default function AudioPlayer({
     const handlePrevious = () => {
         if (onPrevious) onPrevious();
     }
+
+    const currentSongId = pickedSong?.id ?? pickedSong?._id;
+    const currentQueueIndex = queue.findIndex((song) => String(song.id ?? song._id) === String(currentSongId));
+    const upcomingSongs = currentQueueIndex < 0
+        ? queue
+        : [...queue.slice(currentQueueIndex + 1), ...queue.slice(0, currentQueueIndex)];
 
     const handleMetaDataLoad = () => {
         setAudioMetaData(true);
@@ -471,8 +480,47 @@ export default function AudioPlayer({
                                 </ExpandedRightSectionStyled>
                             </ExpandedContentWrapperStyled>
 
+                            {isQueueOpen && (
+                                <QueuePanelStyled aria-label="Up next songs">
+                                    <div className="queue-heading">
+                                        <strong>Up next</strong>
+                                        <span>{upcomingSongs.length} {upcomingSongs.length === 1 ? 'song' : 'songs'}</span>
+                                    </div>
+                                    {upcomingSongs.length ? (
+                                        <div className="queue-list">
+                                            {upcomingSongs.map((song) => (
+                                                <button
+                                                    type="button"
+                                                    key={song.id ?? song._id}
+                                                    onClick={() => {
+                                                        onSelectSong?.(song);
+                                                        setIsQueueOpen(false);
+                                                    }}
+                                                >
+                                                    <img src={song.songImage || song.coverUrl || '/m-app-logo.png'} alt="" />
+                                                    <span className="queue-song-details">
+                                                        <strong>{song.songName || song.title}</strong>
+                                                        <span>{song.artist}</span>
+                                                    </span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="empty-queue">No more songs in this queue.</p>
+                                    )}
+                                </QueuePanelStyled>
+                            )}
+
                             <ExpandedFooterStyled>
-                                <span><MdFormatListBulleted /></span>
+                                <button
+                                    type="button"
+                                    className={isQueueOpen ? 'queue-toggle active' : 'queue-toggle'}
+                                    aria-label={isQueueOpen ? 'Hide upcoming songs' : 'Show upcoming songs'}
+                                    aria-expanded={isQueueOpen}
+                                    onClick={() => setIsQueueOpen((open) => !open)}
+                                >
+                                    <MdFormatListBulleted />
+                                </button>
                             </ExpandedFooterStyled>
                         </ExpandedPlayerContainerStyled>,
                         document.body
